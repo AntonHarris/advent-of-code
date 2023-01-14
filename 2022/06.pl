@@ -40,7 +40,7 @@ sub day06_1 {
 }
 
 sub day06_2 {
-	print "day06_1: ".day06_X(14).".\n";
+	print "day06_2: ".day06_X(14).".\n";
 }
 
 day06_1();

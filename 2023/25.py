@@ -7,6 +7,5 @@ if __name__ == "__main__":
         print("Usage: 25.py file_to_use")
         exit(1)
 
-    infile = open(sys.argv[1], "r")
-    data = infile.readlines()
-    infile.close()
+    with open(sys.argv[1], 'r') as infile:
+        data = [line.strip() for line in infile.readlines()]

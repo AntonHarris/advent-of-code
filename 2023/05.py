@@ -36,11 +36,22 @@ if __name__ == "__main__":
         else:
             pass
 
-    location_values = []
+    smallest_location = sys.maxsize
     for seed in seeds:
         value = int(seed)
         for mapping in maps:
             value = find_value_in_map(value, mapping)
-        location_values.append(value)
+        smallest_location = value if value<smallest_location else smallest_location
+    print("Smallest location: ", smallest_location)
 
-    print("Smallest location: ", min(location_values))
+    smallest_location = sys.maxsize
+    seeds_array = data[0].split(": ")[1].split(" ")
+    seeds_with_ranges = [[int(seeds_array[i]), int(seeds_array[i + 1])] for i in range(0, len(seeds_array), 2)]
+    for seed_range in seeds_with_ranges:
+        for seed in range(seed_range[0], seed_range[0] + seed_range[1]):
+            value = int(seed)
+            for mapping in maps:
+                value = find_value_in_map(value, mapping)
+            smallest_location = value if value<smallest_location else smallest_location # not re-initialising because it's still a valid value
+    print("Smallest location, part 2: ", smallest_location)
+

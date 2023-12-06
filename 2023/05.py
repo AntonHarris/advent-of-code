@@ -2,8 +2,11 @@
 
 import sys
 
-def find_value_in_map(value: int) -> int:
-    pass
+def find_value_in_map(value: int, map_array) -> int:
+    for my_map in map_array:
+        if value >= my_map["src_start"] and value <= my_map["src_end"]:
+            return (value + my_map["action"])
+    return value
 
 if __name__ == "__main__":
     if (len(sys.argv)<2):
@@ -12,49 +15,32 @@ if __name__ == "__main__":
 
     with open(sys.argv[1], 'r') as infile:
         data = [line.strip() for line in infile.readlines()]
-    
+
     # seeds = [int(seed) for seed in data[0].split(": ")[1].split(" ")]
     seeds = list(map(int, data[0].split(": ")[1].split(" ")))
+    maps = []
+    idx = -1
+    for line in data[1:]:
+        if line == "":
+            idx = idx + 1
+            maps.append([]) # add new array to maps array
+        elif line[0].isdigit():
+            parts = line.split(" ")
+            tmp_dict = {
+                "dest_start": int(parts[0]),
+                "src_start": int(parts[1]),
+                "src_end": int(parts[1])+int(parts[2])-1,
+                "action": int(parts[0]) - int(parts[1])
+            }
+            maps[idx].append(tmp_dict)
+        else:
+            pass
 
-    idx = 3
-    # arrays of maps, fields destination_start, source_start, and source_end
-    seeds_to_soil = []
-    while data[idx] != "":
-        # add values to mapping
-        idx = idx+1
-    
-    idx = idx+2
-    soil_to_fertilizer = []
-    while data[idx] != "":
-        # add values to mapping
-        idx = idx+1
+    location_values = []
+    for seed in seeds:
+        value = int(seed)
+        for mapping in maps:
+            value = find_value_in_map(value, mapping)
+        location_values.append(value)
 
-    idx = idx+2
-    fertilizer_to_water = []
-    while data[idx] != "":
-        # add values to mapping
-        idx = idx+1
-
-    idx = idx+2
-    water_to_light = []
-    while data[idx] != "":
-        # add values to mapping
-        idx = idx+1
-
-    idx = idx+2
-    light_to_temperature = []
-    while data[idx] != "":
-        # add values to mapping
-        idx = idx+1
-
-    idx = idx+2
-    temperature_to_humidity = []
-    while data[idx] != "":
-        # add values to mapping
-        idx = idx+1
-
-    idx = idx+2
-    humidity_to_location = []
-    while idx<len(data) and data[idx] != "":
-        # add values to mapping
-        idx = idx+1
+    print("Smallest location: ", min(location_values))

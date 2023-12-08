@@ -12,6 +12,13 @@ def number_winning_races(times, distances) -> int:
                 count_winning_races = count_winning_races + 1
         number_winning_races = number_winning_races*count_winning_races
     return number_winning_races
+    """ Other possibilities:
+        - Always going to be a parabolic, so from the beginning find the first,
+          then from the end find the last, which satisfy the condition, then
+          calculate the difference.
+        - Use quadratic formula to find the intersection between the function of
+          the curve and the constant which is the distance.
+    """
 
 if __name__ == "__main__":
     if (len(sys.argv)<2):
@@ -23,17 +30,6 @@ if __name__ == "__main__":
 
     times = [int(time) for time in re.findall("\d+", data[0])]
     distances = [int(distance) for distance in re.findall("\d+", data[1])]
-
-    """
-    number_winning_races = 1
-    for idx in range(0, len(times)):
-        races = []
-        for time in range(1, times[idx]):
-            races.append(time*(times[idx]-time))
-        winning_races = list(filter(lambda x: x>distances[idx], races))
-        number_winning_races = number_winning_races*len(winning_races)
-    print("Number of winning races: ", number_winning_races)
-    """
     print("Number of winning races: ", number_winning_races(times, distances))
 
     times = [int("".join(re.findall("\d+", data[0])))]

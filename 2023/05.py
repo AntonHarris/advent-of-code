@@ -44,10 +44,17 @@ if __name__ == "__main__":
         smallest_location = value if value<smallest_location else smallest_location
     print("Smallest location: ", smallest_location)
 
+    """ TODO for part 2
+        - squish all the mappings into a single map
+        - don't try and do the calculations for all the seeds in a range,
+          but instead find the one in the range that's the smallest, then
+          go up to the next new mapping in the single map dictionary/array.
+    """
     smallest_location = sys.maxsize
     seeds_array = data[0].split(": ")[1].split(" ")
     seeds_with_ranges = [[int(seeds_array[i]), int(seeds_array[i + 1])] for i in range(0, len(seeds_array), 2)]
     for seed_range in seeds_with_ranges:
+        print("Part 2, new range")
         for seed in range(seed_range[0], seed_range[0] + seed_range[1]):
             value = int(seed)
             for mapping in maps:

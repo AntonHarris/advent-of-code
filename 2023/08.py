@@ -2,6 +2,7 @@
 
 import sys
 import re
+import math
 
 def count_steps(starting_node, directions, nodes) -> int:
     count_steps = 0
@@ -15,10 +16,21 @@ def count_steps(starting_node, directions, nodes) -> int:
     return count_steps
 
 def count_steps_parallel(starting_nodes, directions, nodes):
-    count_steps = 0
     current_nodes = starting_nodes.copy()
-    # this is where the loop should be
-    return count_steps
+    counted_steps = []
+    for current_node in current_nodes:
+        count_steps = 0
+        direction_idx = 0
+        while re.search(r'Z$', current_node) is None:
+            current_node = nodes[current_node][directions[direction_idx]]
+            count_steps += 1
+            direction_idx += 1
+            direction_idx = direction_idx%(len(directions))
+        counted_steps.append(count_steps)
+    counted_steps_lcm = 1
+    for num in counted_steps:
+        counted_steps_lcm = math.lcm(counted_steps_lcm, num)
+    return counted_steps_lcm
 
 if __name__ == "__main__":
     if (len(sys.argv)<2):
@@ -38,6 +50,4 @@ if __name__ == "__main__":
     print("Number of steps for ['AAA']: ", count_steps("AAA", directions, nodes))
 
     starting_nodes = list(filter(lambda tmp_node: tmp_node.endswith('A'), nodes.keys()))
-    print("starting_nodes: ", starting_nodes)
     print("Number of steps for // endswith('A'): ", count_steps_parallel(starting_nodes, directions, nodes))
-

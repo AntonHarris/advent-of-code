@@ -62,4 +62,4 @@ if __name__ == "__main__":
         print(row,"-",col,"=",data[row][col])
         pipe_length += 1
         next_direction = find_next_dir(row, col, data, next_direction)
-    printr(pipe_length)
+    print(pipe_length)

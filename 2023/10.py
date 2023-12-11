@@ -27,17 +27,42 @@ def find_start(data):
             if data[i][j] == 'S':
                 return i,j
 
-# TODO : this function needs to be corrected to correctly determine what is the next direction to take
-def find_next_dir(row, col, data, prev_dir=PipeDirections.NONE):
+def find_first_dir(row, col, data) -> PipeDirections:
     # check N-E-S-W to find first I can take
-    if row>0 and prev_dir != PipeDirections.SOUTH and (data[row-1][col] == '|' or data[row-1][col] == '7' or data[row-1][col] == 'F'):
+    if row>0 and (data[row-1][col] == '|' or data[row-1][col] == '7' or data[row-1][col] == 'F'):
         return PipeDirections.NORTH
-    if col<len(data[row]) and prev_dir != PipeDirections.WEST and (data[row][col+1] == '-' or data[row][col+1] == 'J' or data[row][col+1] == '7'):
-        print("through here")
+    if col<len(data[row]) and (data[row][col+1] == '-' or data[row][col+1] == 'J' or data[row][col+1] == '7'):
         return PipeDirections.EAST
-    if row<len(data) and prev_dir != PipeDirections.NORTH and (data[row+1][col] == '|' or data[row+1][col] == 'L' or data[row+1][col] == 'J'):
+    if row<len(data) and (data[row+1][col] == '|' or data[row+1][col] == 'L' or data[row+1][col] == 'J'):
         return PipeDirections.SOUTH
     return PipeDirections.WEST
+
+def find_next_dir(row, col, prev_dir, data) -> PipeDirections:
+    if data[row][col] == '|':
+        if prev_dir == PipeDirections.NORTH:
+            return PipeDirections.NORTH
+        return PipeDirections.SOUTH
+    if data[row][col] == '-':
+        if prev_dir == PipeDirections.EAST:
+            return PipeDirections.EAST
+        return PipeDirections.WEST
+    if data[row][col] == 'L':
+        if prev_dir == PipeDirections.SOUTH:
+            return PipeDirections.EAST
+        return PipeDirections.NORTH
+    if data[row][col] == 'J':
+        if prev_dir == PipeDirections.SOUTH:
+            return PipeDirections.WEST
+        return PipeDirections.NORTH
+    if data[row][col] == '7':
+        if prev_dir == PipeDirections.NORTH:
+            return PipeDirections.WEST
+        return PipeDirections.SOUTH
+    if data[row][col] == 'F':
+        if prev_dir == PipeDirections.NORTH:
+            return PipeDirections.EAST
+        return PipeDirections.SOUTH
+    return PipeDirections.NONE # should never reach here
 
 if __name__ == "__main__":
     if (len(sys.argv)<2):
@@ -52,14 +77,11 @@ if __name__ == "__main__":
         pipe_map.append([*line])
 
     row, col = find_start(pipe_map)
-    print("start: ",row,"-",col,"=",data[row][col])
-    next_direction = find_next_dir(row, col, data)
-    print("next direction=",next_direction)
-    pipe_length = 0
+    next_direction = find_first_dir(row, col, data)
+    pipe_length = 1 # 1 for starting position's pipe
     while data[row+next_direction.value[0]][col+next_direction.value[1]] != 'S':
         row += next_direction.value[0]
         col += next_direction.value[1]
-        print(row,"-",col,"=",data[row][col])
         pipe_length += 1
-        next_direction = find_next_dir(row, col, data, next_direction)
-    print(pipe_length)
+        next_direction = find_next_dir(row, col, next_direction, data)
+    print("Steps to farthest pipe section: ",int(pipe_length/2))

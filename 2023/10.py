@@ -64,6 +64,10 @@ def find_next_dir(row, col, prev_dir, data) -> PipeDirections:
         return PipeDirections.SOUTH
     return PipeDirections.NONE # should never reach here
 
+def find_inner_loops(data) -> int:
+    inner_loop_areas = 0
+    return inner_loop_areas
+
 if __name__ == "__main__":
     if (len(sys.argv)<2):
         print("Usage: 10.py file_to_use")
@@ -77,11 +81,12 @@ if __name__ == "__main__":
         pipe_map.append([*line])
 
     row, col = find_start(pipe_map)
-    next_direction = find_first_dir(row, col, data)
+    next_direction = find_first_dir(row, col, pipe_map)
     pipe_length = 1 # 1 for starting position's pipe
-    while data[row+next_direction.value[0]][col+next_direction.value[1]] != 'S':
+    while pipe_map[row+next_direction.value[0]][col+next_direction.value[1]] != 'S':
         row += next_direction.value[0]
         col += next_direction.value[1]
         pipe_length += 1
-        next_direction = find_next_dir(row, col, next_direction, data)
-    print("Steps to farthest pipe section: ",int(pipe_length/2))
+        next_direction = find_next_dir(row, col, next_direction, pipe_map)
+    print("Steps to farthest pipe section: ", int(pipe_length/2))
+    print("Number of inner loop areas: ", find_inner_loops(pipe_map))

@@ -46,3 +46,17 @@ if __name__ == "__main__":
         for j in range(i+1, len(galaxies)):
             sum_paths += ((galaxies[j][0] - galaxies[i][0]) + (abs(galaxies[j][1] - galaxies[i][1])))
     print("Sum paths between galaxies after expansion: ", sum_paths)
+
+    """
+    For part, 2, I would have to change the logic of the script, to avoid just needlessly filling
+    up memory (or attempting to) with "empty space".
+    - Create array of galaxies.
+    - For each pair, find how many empty lines and colums are between the pair.
+    - Calculate the distance.
+    For example, if there are normally 4 rows between 2 galaxies, but 2 of those are empty space,
+    the distance (vertically) would be 2 + 2*1_000_000 = 2_000_002. The same calculation would
+    have to be done horizontally.
+    Thankfully I already have the arrays for empty_rows and empty_cols that I can use, I can
+    create a function where I pass the 2 coordinates and then pass the array and ask it to find
+    how many empty elements (rows/cols) are between the 2 numbers.
+    """

@@ -77,8 +77,10 @@ if __name__ == "__main__":
         data = [line.strip() for line in infile.readlines()]
 
     pipe_map = []
+    second_pipe_map = []
     for line in data:
         pipe_map.append([*line])
+        second_pipe_map.append([*line])
 
     row, col = find_start(pipe_map)
     next_direction = find_first_dir(row, col, pipe_map)
@@ -88,5 +90,15 @@ if __name__ == "__main__":
         col += next_direction.value[1]
         pipe_length += 1
         next_direction = find_next_dir(row, col, next_direction, pipe_map)
+        pipe_map[row][col] = 'S'
     print("Steps to farthest pipe section: ", int(pipe_length/2))
+
+    for i in range(0, len(pipe_map)):
+        for j in range(0, len(pipe_map[i])):
+            if pipe_map[i][j] != 'S':
+                second_pipe_map[i][j] = '.'
+    """
+    Solution for part 2:
+    - loop though second map to find inner sections
+    """
     print("Number of inner loop areas: ", find_inner_loops(pipe_map))

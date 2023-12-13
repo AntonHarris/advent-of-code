@@ -7,6 +7,13 @@ def is_line_empty(line) -> bool:
         return True
     return False
 
+def how_many_empty_lines(start, end, list_empty) -> int:
+    count_empty = 0
+    for item in list_empty:
+        if item>start and item<end:
+            count_empty += 1
+    return count_empty
+
 if __name__ == "__main__":
     if (len(sys.argv)<2):
         print("Usage: 11.py file_to_use")
@@ -20,9 +27,7 @@ if __name__ == "__main__":
     empty_rows = []
     for idx, line in enumerate(sky_map):
         if is_line_empty(line):
-            empty_rows.insert(0, idx)
-    for idx in empty_rows:
-        sky_map.insert(idx, ['.'] * len(sky_map[0]))
+            empty_rows.append(idx)
     # Add extra columns for "empty" columns
     empty_cols = []
     for j in range(0, len(sky_map[0])):
@@ -30,10 +35,7 @@ if __name__ == "__main__":
         for i in range(0, len(sky_map)):
             tmp_line.append(sky_map[i][j])
         if is_line_empty(tmp_line):
-            empty_cols.insert(0, j)
-    for idx in empty_cols:
-        for i in range(0, len(sky_map)):
-            sky_map[i].insert(idx, '.')
+            empty_cols.append(j)
     # Create vector/array of different galaxies
     galaxies = []
     for row in range(0, len(sky_map)):
@@ -41,22 +43,19 @@ if __name__ == "__main__":
             if sky_map[row][col] == '#':
                 galaxies.append((row, col))
     # Calculate differences for all sets of galaxies
-    sum_paths = 0
+    sum_paths_1 = 0
+    sum_paths_2 = 0
     for i in range(0, len(galaxies)-1):
         for j in range(i+1, len(galaxies)):
-            sum_paths += ((galaxies[j][0] - galaxies[i][0]) + (abs(galaxies[j][1] - galaxies[i][1])))
-    print("Sum paths between galaxies after expansion: ", sum_paths)
-
-    """
-    For part, 2, I would have to change the logic of the script, to avoid just needlessly filling
-    up memory (or attempting to) with "empty space".
-    - Create array of galaxies.
-    - For each pair, find how many empty lines and colums are between the pair.
-    - Calculate the distance.
-    For example, if there are normally 4 rows between 2 galaxies, but 2 of those are empty space,
-    the distance (vertically) would be 2 + 2*1_000_000 = 2_000_002. The same calculation would
-    have to be done horizontally.
-    Thankfully I already have the arrays for empty_rows and empty_cols that I can use, I can
-    create a function where I pass the 2 coordinates and then pass the array and ask it to find
-    how many empty elements (rows/cols) are between the 2 numbers.
-    """
+            rows_diff = galaxies[j][0]-galaxies[i][0]
+            empty_rows_diff = how_many_empty_lines(galaxies[i][0], galaxies[j][0], empty_rows)
+            cols_diff = abs(galaxies[j][1] - galaxies[i][1])
+            smallest_col = galaxies[i][1] if galaxies[i][1] < galaxies[j][1] else galaxies[j][1]
+            biggest_col = galaxies[i][1] if galaxies[i][1] > galaxies[j][1] else galaxies[j][1]
+            empty_cols_diff = how_many_empty_lines(smallest_col, biggest_col, empty_cols)
+            sum_paths_1 = sum_paths_1 + ((rows_diff-empty_rows_diff) + (empty_rows_diff*2)) \
+                                      + ((cols_diff-empty_cols_diff) + (empty_cols_diff*2))
+            sum_paths_2 = sum_paths_2 + ((rows_diff-empty_rows_diff) + (empty_rows_diff*1000000)) \
+                                      + ((cols_diff-empty_cols_diff) + (empty_cols_diff*1000000))
+    print("Sum paths between galaxies after expansion: ", sum_paths_1)
+    print("Sum paths between galaxies after bigger expansion: ", sum_paths_2)

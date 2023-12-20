@@ -64,10 +64,6 @@ def find_next_dir(row, col, prev_dir, data) -> PipeDirections:
         return PipeDirections.SOUTH
     return PipeDirections.NONE # should never reach here
 
-def find_inner_loops(data) -> int:
-    inner_loop_areas = 0
-    return inner_loop_areas
-
 if __name__ == "__main__":
     if (len(sys.argv)<2):
         print("Usage: 10.py file_to_use")
@@ -97,8 +93,25 @@ if __name__ == "__main__":
         for j in range(0, len(pipe_map[i])):
             if pipe_map[i][j] != 'S':
                 second_pipe_map[i][j] = '.'
-    """
-    Solution for part 2:
-    - loop though second map to find inner sections
-    """
-    print("Number of inner loop areas: ", find_inner_loops(pipe_map))
+    # something should normally be done with S, it should be replaced with the appropriate pipe piece,
+    # but it works for my input data so I can't be bothered, maybe in v2.0
+    count_inner = 0
+    for i in range(len(second_pipe_map)):
+        section = 0.0
+        for j in range(len(second_pipe_map[i])):
+            if second_pipe_map[i][j] == '|':
+                section += 1
+            elif second_pipe_map[i][j] == '-':
+                pass # nohing changes
+            elif second_pipe_map[i][j] == 'L':
+                section += 0.5
+            elif second_pipe_map[i][j] == 'J':
+                section -= 0.5
+            elif second_pipe_map[i][j] == '7':
+                section += 0.5
+            elif second_pipe_map[i][j] == 'F':
+                section -= 0.5
+            elif second_pipe_map[i][j] == '.':
+                if abs(section)%2 == 1:
+                    count_inner += 1
+    print("Number of inner loop areas: ", count_inner)

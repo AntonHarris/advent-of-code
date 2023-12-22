@@ -19,6 +19,7 @@ int main (int argc, char**argv) {
     }
     if (fgets(buffer, sizeof(buffer)-1, in_file) == NULL) {
         perror("Unable to read from file");
+        return 1;
     }
     fclose(in_file);
     if (buffer[strlen(buffer)-1] == '\n') {

@@ -10,14 +10,22 @@ int main (int argc, char**argv) {
         return 1;
     }
 
-    char buffer[10000] = {0};
+    char *buffer = NULL;
+    size_t file_length = 0;
     FILE *in_file = fopen(argv[1], "r");
     if (in_file == NULL) {
         // printf("Unable to open file %s.\n", argv[1]);
         perror("Unable to open file");
         return 1;
     }
-    if (fgets(buffer, sizeof(buffer)-1, in_file) == NULL) {
+    if (fseek(in_file, 0L, SEEK_END) == 0) {
+        file_length = (size_t)ftell(in_file);
+        fseek(in_file, 0L, SEEK_SET);
+        buffer = (char *) calloc (file_length+1, sizeof(char));
+    } else {
+        perror("Unable to move in the file");
+    }
+    if (fgets(buffer, file_length, in_file) == NULL) {
         perror("Unable to read from file");
         return 1;
     }
@@ -35,6 +43,8 @@ int main (int argc, char**argv) {
     }
     printf("Floor: %d.\n", floor);
     printf("Position entered basement: %d.\n", position_enter_basement);
+
+    free(buffer);
 
     return 0;
 }

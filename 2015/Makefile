@@ -1,19 +1,19 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99
-TARGETS = $(shell seq -w 01 25)
 RM_TARGETS = $(shell find . -type f -executable)
 
 .PHONY: all clean
 
-all: $(TARGETS)
+all: 01 02 05
 
-# Not skipping if source prerequisite file does not exist, TODO
-%: %.c
-	@if [ -e $< ] && [ -f $< ]; then \
-		$(CC) $(CFLAGS) $< -o $@; \
-	else \
-		echo "File $< not found, skipping"; \
-	fi
+01: 01.c
+		$(CC) $(CFLAGS) $< -o $@
+
+02: 02.c
+		$(CC) $(CFLAGS) $< -o $@
+
+05: 05.c
+		$(CC) $(CFLAGS) $< -o $@
 
 clean:
 	@rm -f $(RM_TARGETS) 2>/dev/null || true

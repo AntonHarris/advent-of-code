@@ -12,6 +12,12 @@ all: 01 02 05
 02: 02.c
 		$(CC) $(CFLAGS) $< -o $@
 
+03: 03.c
+		$(CC) $(CFLAGS) $< -o $@
+
+04: 04.c
+		$(CC) $(CFLAGS) $< -o $@
+
 05: 05.c
 		$(CC) $(CFLAGS) $< -o $@
 

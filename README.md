@@ -11,3 +11,5 @@ My attempts at the code challenges for adventofcode.com
 2021: \
 2022: Perl \
 2023: Python
+
+Possible languages for future AoC (in no particular order): Go, Rust, C++, C#, Haskell, OCaml, Clojure, Common Lisp, Scala, F#, Zig, Nim, Java D-lang

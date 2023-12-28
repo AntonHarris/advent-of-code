@@ -55,15 +55,7 @@ char * chomp(char *p) {
 }
 
 bool is_vowel (char c) {
-    switch (tolower(c)) {
-        case 'a':
-        case 'e':
-        case 'i':
-        case 'o':
-        case 'u':
-            return true;
-    }
-    return false;
+    return strchr("aeiou", tolower(c)) != NULL;
 }
 
 bool has_three_vowels (const char *s) {

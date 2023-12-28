@@ -4,7 +4,7 @@ RM_TARGETS = $(shell find . -type f -executable)
 
 .PHONY: all clean
 
-all: 01 02 05
+all: 01 02 03 05
 
 01: 01.c
 		$(CC) $(CFLAGS) $< -o $@

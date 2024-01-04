@@ -21,12 +21,16 @@ if __name__ == "__main__":
             idx += 1
         matches = re.match(condition_regex, line)
         conditions.update({matches[1]: matches[2].split(r',')})
-    print(conditions)
 
     idx += 1
     sum_ratings = 0
     # loop on parts
+    part_regex = r'^{([^}]+)}$'
     for line in data[idx:]:
-        pass
-        # print(line)
+        part = {}
+        matches = re.match(part_regex, line)
+        line_arrayed = matches[1].split(r',')
+        for i in line_arrayed:
+            part.update({i.split(r'=')[0]: i.split(r'=')[1]})
+        # TODO: loop through conditions, stop when A or R, adding part["x"] to sum_ratings if accepted
     print(f"Sum parts ratings: {sum_ratings}")

@@ -51,5 +51,6 @@ if __name__ == "__main__":
                     else:
                         next_workflow = this_condition
                         break
-
     print(f"Sum parts ratings: {sum_ratings}")
+
+    # Part 2: find all possible accepted combinations

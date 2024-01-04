@@ -79,23 +79,24 @@ int main (int argc, char**argv) {
     ptr_data = buffer;
     int santa_x_coord[2] = {-x_coord[0]};
     int santa_y_coord[2] = {-y_coord[0]};
+    int santa_or_robo = 0;
     *(presents_map+(santa_y_coord[0]*x_size)+santa_x_coord[0]) = 1;
     while (*ptr_data) {
         switch(*ptr_data) {
             case '^':
-                santa_y_coord[0]++;
+                santa_y_coord[santa_or_robo]++;
                 break;
             case '>':
-                santa_x_coord[0]++;
+                santa_x_coord[santa_or_robo]++;
                 break;
             case 'v':
-                santa_y_coord[0]--;
+                santa_y_coord[santa_or_robo]--;
                 break;
             case '<':
-                santa_x_coord[0]--;
+                santa_x_coord[santa_or_robo]--;
                 break;
         }
-        *(presents_map+(santa_y_coord[0]*x_size)+santa_x_coord[0]) += 1;
+        *(presents_map+(santa_y_coord[santa_or_robo]*x_size)+santa_x_coord[santa_or_robo]) += 1;
         ptr_data++;
     }
 

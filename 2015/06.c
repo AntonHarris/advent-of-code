@@ -30,48 +30,31 @@ int main (int argc, char**argv) {
         return 1;
     }
     char buffer[BUFFER_SIZE];
-    int light_grid[GRID_ROWS][GRID_COLS] = { [0 ... (GRID_ROWS-1)] = { [0 ... (GRID_COLS-1)] = 0 }};
+    int light_grid_part_1[GRID_ROWS][GRID_COLS] = { [0 ... (GRID_ROWS-1)] = { [0 ... (GRID_COLS-1)] = 0 }};
+    int light_grid_part_2[GRID_ROWS][GRID_COLS] = { [0 ... (GRID_ROWS-1)] = { [0 ... (GRID_COLS-1)] = 0 }};
     while (fgets(buffer, sizeof(buffer), in_file)) {
         chomp(buffer);
         int start_coords[2], end_coords[2];
         switch(buffer[6]) { // lazy way of doing this
             case ' ': // toggle
                 sscanf(buffer, "toggle %d,%d through %d,%d", &start_coords[0], &start_coords[1], &end_coords[0], &end_coords[1]);
-                toggle_lights(light_grid, start_coords, end_coords);
+                toggle_lights(light_grid_part_1, start_coords, end_coords);
+                change_light_brightness(light_grid_part_2, start_coords, end_coords, 2);
                 break;
             case 'f': // turn off
                 sscanf(buffer, "turn off %d,%d through %d,%d", &start_coords[0], &start_coords[1], &end_coords[0], &end_coords[1]);
-                turn_on_off(light_grid, start_coords, end_coords, TURN_OFF);
+                turn_on_off(light_grid_part_1, start_coords, end_coords, TURN_OFF);
+                change_light_brightness(light_grid_part_2, start_coords, end_coords, -1);
                 break;
             case 'n': // turn on
                 sscanf(buffer, "turn on %d,%d through %d,%d", &start_coords[0], &start_coords[1], &end_coords[0], &end_coords[1]);
-                turn_on_off(light_grid, start_coords, end_coords, TURN_ON);
+                turn_on_off(light_grid_part_1, start_coords, end_coords, TURN_ON);
+                change_light_brightness(light_grid_part_2, start_coords, end_coords, 1);
                 break;
         }
     }
-    printf("Number of lit lights: %d.\n", count_lights_lit(light_grid));
-
-    memset(&light_grid[0][0], '\0', (sizeof(int))*GRID_ROWS*GRID_COLS);
-    fseek(in_file, 0, SEEK_SET);
-    while (fgets(buffer, sizeof(buffer), in_file)) {
-        chomp(buffer);
-        int start_coords[2], end_coords[2];
-        switch(buffer[6]) { // lazy way of doing this
-            case ' ': // toggle
-                sscanf(buffer, "toggle %d,%d through %d,%d", &start_coords[0], &start_coords[1], &end_coords[0], &end_coords[1]);
-                change_light_brightness(light_grid, start_coords, end_coords, 2);
-                break;
-            case 'f': // turn off
-                sscanf(buffer, "turn off %d,%d through %d,%d", &start_coords[0], &start_coords[1], &end_coords[0], &end_coords[1]);
-                change_light_brightness(light_grid, start_coords, end_coords, -1);
-                break;
-            case 'n': // turn on
-                sscanf(buffer, "turn on %d,%d through %d,%d", &start_coords[0], &start_coords[1], &end_coords[0], &end_coords[1]);
-                change_light_brightness(light_grid, start_coords, end_coords, 1);
-                break;
-        }
-    }
-    printf("Total light grid brightness: %d.\n", calc_lights_brightness(light_grid));
+    printf("Number of lit lights: %d.\n", count_lights_lit(light_grid_part_1));
+    printf("Total light grid brightness: %d.\n", calc_lights_brightness(light_grid_part_2));
 
     fclose(in_file);
 

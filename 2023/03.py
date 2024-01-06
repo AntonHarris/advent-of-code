@@ -50,4 +50,3 @@ if __name__ == "__main__":
         if len(gear_numbers_id_set) == 2:
             gear_ratios_sum += (numbers_dict[gear_numbers_id_set.pop()]["number"]*numbers_dict[gear_numbers_id_set.pop()]["number"])
     print(f"Sum of gear rations: {gear_ratios_sum}")
-        

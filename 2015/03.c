@@ -5,7 +5,21 @@
 #include <ctype.h>
 #include <libgen.h>
 
+typedef struct coords_house {
+    int x;
+    int y;
+    struct coords_house *next;
+} COORDS_HOUSE;
+
+#define X_COORD 0
+#define Y_COORD 1
+
 char * chomp(char *p);
+bool house_exists (const COORDS_HOUSE *already_Visited, const COORDS_HOUSE *house_to_check);
+COORDS_HOUSE * add_new_house(int x, int y, COORDS_HOUSE *next_house);
+COORDS_HOUSE * check_and_add_house(int x, int y, COORDS_HOUSE *next_house);
+unsigned int count_houses (const COORDS_HOUSE *houses);
+void free_houses (COORDS_HOUSE **houses);
 
 int main (int argc, char**argv) {
     if (argc<2) {
@@ -17,13 +31,13 @@ int main (int argc, char**argv) {
     char *buffer = NULL;
     size_t file_length = 0;
     if (in_file == NULL) {
-        fprintf(stderr, "Unable to open file %s.\n", argv[0]);
+        fprintf(stderr, "Unable to open file %s.\n", argv[1]);
         perror("Error message opening file file");
         return 1;
     }
     if (fseek(in_file, 0L, SEEK_END) == 0) {
         file_length = (size_t)ftell(in_file);
-        fseek(in_file, 0L, SEEK_SET);
+        fseek(in_file, 0L, SEEK_SET); // Supposing that if I could move to end, no issues returning to start
         buffer = (char *) calloc (file_length+1, sizeof(char));
     } else {
         perror("Unable to move in the file");
@@ -33,86 +47,42 @@ int main (int argc, char**argv) {
         perror("Unable to read from file");
         return 1;
     }
-    chomp(buffer);
     fclose(in_file);
+    chomp(buffer);
 
-    // Calculate max X and Y coordinates
-    int x_min_max[2] = {0}, y_min_max[2] = {0};
-    int curr_x_coord = 0, curr_y_coord = 0;
-    char *ptr_data = buffer;
-    while (*ptr_data) {
-        switch(*ptr_data) {
+    COORDS_HOUSE *santa_alone = add_new_house(0, 0, NULL);
+    COORDS_HOUSE *santa_with_robo = add_new_house(0, 0, NULL);
+    char *ptr_buffer = buffer;
+    int santa_alone_coords[2] = {0, 0};
+    int santa_with_robo_coords[2][2] = { [0 ... 1] = { [0 ... 1] = 0 }};
+    int santa_or_robo = 0; // Santa is 0, Robot is 1
+    while (*ptr_buffer) {
+        switch (*ptr_buffer++) {
             case '^':
-                curr_y_coord++;
-                if (curr_y_coord > y_min_max[1]) {
-                    y_min_max[1] = curr_y_coord;
-                }
+                santa_alone_coords[Y_COORD]++;
+                santa_with_robo_coords[santa_or_robo][Y_COORD]++;
                 break;
             case '>':
-                curr_x_coord++;
-                if (curr_x_coord > x_min_max[1]) {
-                    x_min_max[1] = curr_x_coord;
-                }
+                santa_alone_coords[X_COORD]++;
+                santa_with_robo_coords[santa_or_robo][X_COORD]++;
                 break;
             case 'v':
-                curr_y_coord--;
-                if (curr_y_coord < y_min_max[0]) {
-                    y_min_max[0] = curr_y_coord;
-                }
+                santa_alone_coords[Y_COORD]--;
+                santa_with_robo_coords[santa_or_robo][Y_COORD]--;
                 break;
             case '<':
-                curr_x_coord--;
-                if (curr_x_coord < x_min_max[0]) {
-                    x_min_max[0] = curr_x_coord;
-                }
+                santa_alone_coords[X_COORD]--;
+                santa_with_robo_coords[santa_or_robo][X_COORD]--;
                 break;
         }
-        ptr_data++;
+        santa_alone = check_and_add_house(santa_alone_coords[X_COORD], santa_alone_coords[Y_COORD], santa_alone);
+        santa_with_robo = check_and_add_house(santa_with_robo_coords[santa_or_robo][X_COORD], santa_with_robo_coords[santa_or_robo][Y_COORD], santa_with_robo);
+        santa_or_robo = !santa_or_robo;
     }
+    printf("Houses visited by Santa alone: %u.\n", count_houses(santa_alone));
+    printf("Houses visited by Santa and Robot: %u.\n", count_houses(santa_with_robo));
 
-    // Create presents map
-    int x_size = x_min_max[1]-x_min_max[0]+1, y_size = y_min_max[1]-y_min_max[0]+1;
-    int map_size = x_size*y_size;
-    int *presents_map = (int *) calloc (map_size, sizeof(int));
-    
-    // Distribute presents, Santa alone
-    ptr_data = buffer;
-    int santa_x_coord[2] = {-x_min_max[0]};
-    int santa_y_coord[2] = {-y_min_max[0]};
-    int santa_or_robo = 0;
-    *(presents_map+(santa_y_coord[0]*x_size)+santa_x_coord[0]) = 1;
-    while (*ptr_data) {
-        switch(*ptr_data) {
-            case '^':
-                santa_y_coord[santa_or_robo]++;
-                break;
-            case '>':
-                santa_x_coord[santa_or_robo]++;
-                break;
-            case 'v':
-                santa_y_coord[santa_or_robo]--;
-                break;
-            case '<':
-                santa_x_coord[santa_or_robo]--;
-                break;
-        }
-        *(presents_map+(santa_y_coord[santa_or_robo]*x_size)+santa_x_coord[santa_or_robo]) += 1;
-        ptr_data++;
-    }
-
-    // Count houses with presents
-    int *ptr_presents_map = presents_map;
-    int houses_with_presents = 0;
-    for (int i=0 ; i<map_size ; i++, ptr_presents_map++) {
-        if (*ptr_presents_map > 0) {
-            houses_with_presents++;
-        }
-    }
-    printf("Houses with multiple presents, part 1: %d.\n", houses_with_presents);
-
-    free(presents_map);
     free(buffer);
-
     return 0;
 }
 
@@ -121,4 +91,59 @@ char * chomp(char *p) {
         p[strlen(p)-1] = '\0';
     }
     return p;
+}
+
+bool house_exists (const COORDS_HOUSE *already_Visited, const COORDS_HOUSE *house_to_check) {
+    while (already_Visited) {
+        if (already_Visited->x == house_to_check->x && already_Visited->y == house_to_check->y) {
+            return true;
+        }
+        already_Visited = already_Visited->next;
+    }
+    return false;
+}
+
+COORDS_HOUSE * add_new_house(int x, int y, COORDS_HOUSE *next_house) {
+    COORDS_HOUSE *new_house = (COORDS_HOUSE *) calloc (sizeof(COORDS_HOUSE), 1);
+    if (new_house) {
+        new_house->x = x;
+        new_house->y = y;
+        new_house->next = next_house;
+    } else {
+        perror("Unable to calloc for new house");
+        exit(1);
+    }
+    return new_house;
+}
+
+COORDS_HOUSE * check_and_add_house(int x, int y, COORDS_HOUSE *next_house) {
+    COORDS_HOUSE new_house = {
+        .x = x,
+        .y = y
+    };
+    if (!house_exists(next_house, &new_house)) {
+        return add_new_house(new_house.x, new_house.y, next_house);
+    }
+
+    return next_house;
+}
+
+unsigned int count_houses (const COORDS_HOUSE *houses) {
+    unsigned int houses_counted = 0;
+    while (houses) {
+        houses_counted++;
+        houses = houses->next;
+    }
+    return houses_counted;
+}
+
+void free_houses (COORDS_HOUSE **houses) {
+    COORDS_HOUSE *ptr_houses = *houses;
+    *houses = NULL;
+    while (ptr_houses) {
+        COORDS_HOUSE *tmp_ptr = ptr_houses;
+        ptr_houses = ptr_houses->next;
+        free(tmp_ptr);
+    }
+    return;
 }

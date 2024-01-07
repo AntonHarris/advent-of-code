@@ -50,9 +50,9 @@ int main (int argc, char**argv) {
     fclose(in_file);
     chomp(buffer);
 
+    char *ptr_buffer = buffer;
     COORDS_HOUSE *santa_alone = add_new_house(0, 0, NULL);
     COORDS_HOUSE *santa_with_robo = add_new_house(0, 0, NULL);
-    char *ptr_buffer = buffer;
     int santa_alone_coords[2] = {0, 0};
     int santa_with_robo_coords[2][2] = { [0 ... 1] = { [0 ... 1] = 0 }};
     int santa_or_robo = 0; // Santa is 0, Robot is 1

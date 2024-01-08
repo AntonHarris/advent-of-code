@@ -83,6 +83,8 @@ int main (int argc, char**argv) {
     printf("Houses visited by Santa and Robot: %u.\n", count_houses(santa_with_robo));
 
     free(buffer);
+    free_houses (&santa_alone);
+    free_houses (&santa_with_robo);
     return 0;
 }
 

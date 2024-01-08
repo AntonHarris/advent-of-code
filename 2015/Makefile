@@ -4,7 +4,7 @@ RM_TARGETS = $(shell find . -type f -executable)
 
 .PHONY: all clean
 
-all: 01 02 03 05 06
+all: 01 02 03 05 06 08
 
 01: 01.c
 		$(CC) $(CFLAGS) $< -o $@
@@ -22,6 +22,12 @@ all: 01 02 03 05 06
 		$(CC) $(CFLAGS) $< -o $@
 
 06: 06.c
+		$(CC) $(CFLAGS) $< -o $@
+
+07: 07.c
+		$(CC) $(CFLAGS) $< -o $@
+
+08: 08.c
 		$(CC) $(CFLAGS) $< -o $@
 
 clean:

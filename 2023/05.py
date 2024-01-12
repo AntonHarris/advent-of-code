@@ -2,10 +2,10 @@
 
 import sys
 
-def find_value_in_map(value: int, map_array) -> int:
-    for my_map in map_array:
-        if value >= my_map["src_start"] and value <= my_map["src_end"]:
-            return (value + my_map["action"])
+def find_value_in_map(value: int, mapping_array) -> int:
+    for my_map in mapping_array:
+        if value >= my_map[0] and value <= my_map[1]:
+            return (value + my_map[3])
     return value
 
 if __name__ == "__main__":
@@ -23,16 +23,9 @@ if __name__ == "__main__":
         if line == "":
             maps.append([]) # add new array to maps array
         elif line[0].isdigit():
-            parts = line.split(" ")
-            tmp_dict = {
-                "dest_start": int(parts[0]),
-                "src_start": int(parts[1]),
-                "src_end": int(parts[1])+int(parts[2])-1,
-                "action": int(parts[0]) - int(parts[1])
-            }
-            maps[-1].append(tmp_dict)
-        else:
-            pass
+            parts = list(map(int, line.split(" ")))
+            maps[-1].append([parts[1], parts[1]+parts[2]-1, parts[0], parts[0]-parts[1]])
+            # src_start, src_end, dest_start, action
 
     smallest_location = sys.maxsize
     for seed in seeds:

@@ -19,10 +19,8 @@ if __name__ == "__main__":
     # seeds = [int(seed) for seed in data[0].split(": ")[1].split(" ")]
     seeds = list(map(int, data[0].split(": ")[1].split(" ")))
     maps = []
-    idx = -1
     for line in data[1:]:
         if line == "":
-            idx = idx + 1
             maps.append([]) # add new array to maps array
         elif line[0].isdigit():
             parts = line.split(" ")
@@ -32,7 +30,7 @@ if __name__ == "__main__":
                 "src_end": int(parts[1])+int(parts[2])-1,
                 "action": int(parts[0]) - int(parts[1])
             }
-            maps[idx].append(tmp_dict)
+            maps[-1].append(tmp_dict)
         else:
             pass
 
@@ -45,20 +43,19 @@ if __name__ == "__main__":
     print("Smallest location: ", smallest_location)
 
     """ TODO for part 2
-        - squish all the mappings into a single map
         - don't try and do the calculations for all the seeds in a range,
           but instead find the one in the range that's the smallest, then
           go up to the next new mapping in the single map dictionary/array.
     """
-    smallest_location = sys.maxsize
-    seeds_array = data[0].split(": ")[1].split(" ")
-    seeds_with_ranges = [[int(seeds_array[i]), int(seeds_array[i + 1])] for i in range(0, len(seeds_array), 2)]
-    for seed_range in seeds_with_ranges:
-        print("Part 2, new range")
-        for seed in range(seed_range[0], seed_range[0] + seed_range[1]):
-            value = int(seed)
-            for mapping in maps:
-                value = find_value_in_map(value, mapping)
-            smallest_location = value if value<smallest_location else smallest_location # not re-initialising because it's still a valid value
-    print("Smallest location, part 2: ", smallest_location)
+    # smallest_location = sys.maxsize
+    # seeds_array = data[0].split(": ")[1].split(" ")
+    # seeds_with_ranges = [[int(seeds_array[i]), int(seeds_array[i + 1])] for i in range(0, len(seeds_array), 2)]
+    # for seed_range in seeds_with_ranges:
+    #     print("Part 2, new range")
+    #     for seed in range(seed_range[0], seed_range[0] + seed_range[1]):
+    #         value = int(seed)
+    #         for mapping in maps:
+    #             value = find_value_in_map(value, mapping)
+    #         smallest_location = value if value<smallest_location else smallest_location # not re-initialising because it's still a valid value
+    # print("Smallest location, part 2: ", smallest_location)
 

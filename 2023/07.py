@@ -5,6 +5,7 @@ from enum import Enum
 
 # Global variable
 card_order_low_to_high = "23456789TJQKA"
+card_order_low_to_high_with_joker = "J23456789TQKA"
 
 # Enum to order hand types
 class Hand_type(Enum):
@@ -51,21 +52,27 @@ class Card_hand:
     def __str__ (self):
         return f"Hand: {self.hand}, hand type: {str(self.hand_type.name)}, bid: {self.bid}"
     
+    def get_hand (self):
+        return self.hand
+
     def get_hand_type (self):
+        return self.hand_type
+    
+    def get_hand_type_with_joker (self):
         return self.hand_type
     
     def get_bid (self):
         return self.bid
 
-    def compare (self, hand):
+    def compare (self, hand, comparaison_string):
         if self.hand_type.value > hand.get_hand_type().value:
             return -1
         if self.hand_type.value < hand.get_hand_type().value:
             return 1
         for i in range(len(self.hand)):
-            if card_order_low_to_high.index(self.hand[i]) > card_order_low_to_high.index(hand.hand[i]):
+            if comparaison_string.index(self.hand[i]) > comparaison_string.index(hand.hand[i]):
                 return -1
-            elif card_order_low_to_high.index(self.hand[i]) < card_order_low_to_high.index(hand.hand[i]):
+            elif comparaison_string.index(self.hand[i]) < comparaison_string.index(hand.hand[i]):
                 return 1
         return 0 # identical hand
 
@@ -83,11 +90,17 @@ if __name__ == "__main__":
     for line in data:
         new_hand = Card_hand(*line.split(" "))
         idx = len(hands)
+        idx_with_joker = len(hands_with_joker)
         for i in range(len(hands)):
-            if hands[i].compare(new_hand) < 0:
+            if hands[i].compare(new_hand, card_order_low_to_high) < 0:
                 idx = i
                 break
+        for i in range(len(hands_with_joker)):
+            if hands_with_joker[i].compare(new_hand, card_order_low_to_high_with_joker) < 0:
+                idx_with_joker = i
+                break
         hands.insert(idx, new_hand)
+        hands_with_joker.insert(idx_with_joker, new_hand)
     total_winnings = 0
     for idx, hand in enumerate(hands):
         total_winnings += (idx+1)*hand.get_bid()

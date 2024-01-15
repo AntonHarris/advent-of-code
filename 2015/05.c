@@ -9,14 +9,14 @@
 #define NO_SPACING 1
 #define ONE_SPACING 2
 
-char * chomp(char *p);
+char* chomp(char *p);
 bool is_vowel (char c);
 bool has_three_vowels (const char *s);
 bool letter_repeat_with_spacing (const char *s, unsigned int spacing);
 bool contain_forbidden_strings (const char *s);
 bool pair_letters_repeat (const char *s);
 
-int main (int argc, char**argv) {
+int main (int argc, char **argv) {
     if (argc<2) {
         printf("Usage: %s [input_file_path/]input_file\n", basename(argv[0]));
         return 1;
@@ -47,7 +47,7 @@ int main (int argc, char**argv) {
     return 0;
 }
 
-char * chomp(char *p) {
+char* chomp(char *p) {
     while (strlen(p) > 0 && p[strlen(p)-1] == '\n') {
         p[strlen(p)-1] = '\0';
     }

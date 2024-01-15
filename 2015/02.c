@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-char * chomp(char *p) {
+char* chomp(char *p) {
     while (p[strlen(p)-1] == '\n') {
         p[strlen(p)-1] = '\0';
     }

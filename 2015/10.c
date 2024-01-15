@@ -9,7 +9,7 @@
 
 void next_sequence (char *s);
 
-int main (int argc, char**argv) {
+int main (int argc, char **argv) {
     if (argc<3) {
         printf("Usage: %s puzzle_input number_cycles\n", basename(argv[0]));
         return 1;

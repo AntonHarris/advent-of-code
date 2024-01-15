@@ -7,7 +7,7 @@
 
 #define BUFFER_SIZE 100
 
-char * chomp(char *p);
+char* chomp(char *p);
 size_t count_chars_values(const char *s);
 size_t count_chars_str_reencoded(const char *s);
 
@@ -38,7 +38,7 @@ int main (int argc, char**argv) {
     return 0;
 }
 
-char * chomp(char *s) {
+char* chomp(char *s) {
     size_t s_len = strlen(s);
     while (s_len > 0 && s[--s_len] == '\n') {
         s[s_len] = '\0';

@@ -14,10 +14,10 @@ typedef struct coords_house {
 #define X_COORD 0
 #define Y_COORD 1
 
-char * chomp(char *p);
+char* chomp(char *p);
 bool house_exists (const COORDS_HOUSE *already_Visited, const COORDS_HOUSE *house_to_check);
-COORDS_HOUSE * add_new_house(int x, int y, COORDS_HOUSE *next_house);
-COORDS_HOUSE * check_and_add_house(int x, int y, COORDS_HOUSE *next_house);
+COORDS_HOUSE* add_new_house(int x, int y, COORDS_HOUSE *next_house);
+COORDS_HOUSE* check_and_add_house(int x, int y, COORDS_HOUSE *next_house);
 unsigned int count_houses (const COORDS_HOUSE *houses);
 void free_houses (COORDS_HOUSE **houses);
 
@@ -88,7 +88,7 @@ int main (int argc, char**argv) {
     return 0;
 }
 
-char * chomp(char *p) {
+char* chomp(char *p) {
     while (strlen(p) > 0 && p[strlen(p)-1] == '\n') {
         p[strlen(p)-1] = '\0';
     }
@@ -105,7 +105,7 @@ bool house_exists (const COORDS_HOUSE *already_Visited, const COORDS_HOUSE *hous
     return false;
 }
 
-COORDS_HOUSE * add_new_house(int x, int y, COORDS_HOUSE *next_house) {
+COORDS_HOUSE* add_new_house(int x, int y, COORDS_HOUSE *next_house) {
     COORDS_HOUSE *new_house = (COORDS_HOUSE *) calloc (sizeof(COORDS_HOUSE), 1);
     if (new_house) {
         new_house->x = x;
@@ -118,7 +118,7 @@ COORDS_HOUSE * add_new_house(int x, int y, COORDS_HOUSE *next_house) {
     return new_house;
 }
 
-COORDS_HOUSE * check_and_add_house(int x, int y, COORDS_HOUSE *next_house) {
+COORDS_HOUSE* check_and_add_house(int x, int y, COORDS_HOUSE *next_house) {
     COORDS_HOUSE new_house = {
         .x = x,
         .y = y

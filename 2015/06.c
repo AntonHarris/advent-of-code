@@ -18,7 +18,7 @@ typedef enum Brightness {
     TOGGLE = 2,
 } BRIGHTNESS;
 
-char * chomp (char *p);
+char* chomp (char *p);
 // Part 1 functions declarations
 void turn_on_off (int arr[GRID_ROWS][GRID_COLS], int start_coords[], int end_coords[], ACTION action);
 void toggle_lights (int arr[GRID_ROWS][GRID_COLS], int start_coords[], int end_coords[]);
@@ -27,7 +27,7 @@ int count_lights_lit (const int arr[GRID_ROWS][GRID_COLS]);
 void change_light_brightness(int arr[GRID_ROWS][GRID_COLS], int start_coords[], int end_coords[], BRIGHTNESS change);
 int calc_lights_brightness(const int arr[GRID_ROWS][GRID_COLS]);
 
-int main (int argc, char**argv) {
+int main (int argc, char **argv) {
     if (argc<2) {
         printf("Usage: %s [input_file_path/]input_file\n", basename(argv[0]));
         return 1;
@@ -70,7 +70,7 @@ int main (int argc, char**argv) {
     return 0;
 }
 
-char * chomp (char *p) {
+char* chomp (char *p) {
     while (strlen(p) > 0 && p[strlen(p)-1] == '\n') {
         p[strlen(p)-1] = '\0';
     }

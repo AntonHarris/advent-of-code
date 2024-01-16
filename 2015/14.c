@@ -21,6 +21,13 @@ typedef struct reindeer {
     unsigned int rest_time;
 } REINDEER;
 
+typedef struct race_stats {
+    REINDEER_STATE state;
+    unsigned int time_remaining;
+    unsigned int distance;
+    unsigned int points;
+} RACE_STATS;
+
 char* chomp(char *p);
 unsigned int burst_race(const REINDEER reindeers[], const size_t reindeer_count);
 unsigned int points_race(const REINDEER reindeers[], const size_t reindeer_count);
@@ -84,51 +91,50 @@ unsigned int burst_race(const REINDEER reindeers[], const size_t reindeer_count)
 
 unsigned int points_race(const REINDEER reindeers[], const size_t reindeer_count) {
     unsigned int most_points = 0;
-    // 0 = current reindeer action, 1 = current action time remaining, 2 = current reindeer distance, 3 = current reindeer points
-    unsigned int race_stats[REINDEER_BUFFER_SIZE][4];
+    RACE_STATS race_stats[REINDEER_BUFFER_SIZE];
     // Initialise race stats
     for (size_t i=0 ; i<reindeer_count ; i++) {
-        race_stats[i][0] = REINDEER_FLYING;
-        race_stats[i][1] = reindeers[i].flight_duration;
-        race_stats[i][2] = 0;
-        race_stats[i][3] = 0;
+        race_stats[i].state = REINDEER_FLYING;
+        race_stats[i].time_remaining = reindeers[i].flight_duration;
+        race_stats[i].distance = 0;
+        race_stats[i].points = 0;
     }
     // RACE !!
     for (unsigned int curr_race_time = 0 ; curr_race_time < RACE_TIME ; curr_race_time++) {
         // Reindeer action
         for (size_t i=0 ; i<reindeer_count ; i++) {
-            if (race_stats[i][1] == 0) {
-                if (race_stats[i][0] == REINDEER_FLYING) {
-                    race_stats[i][0] = REINDEER_RESTING;
-                    race_stats[i][1] = reindeers[i].rest_time;
+            if (race_stats[i].time_remaining == 0) {
+                if (race_stats[i].state == REINDEER_FLYING) {
+                    race_stats[i].state = REINDEER_RESTING;
+                    race_stats[i].time_remaining = reindeers[i].rest_time;
                 } else {
-                    race_stats[i][0] = REINDEER_FLYING;
-                    race_stats[i][1] = reindeers[i].flight_duration;
+                    race_stats[i].state = REINDEER_FLYING;
+                    race_stats[i].time_remaining = reindeers[i].flight_duration;
                 }
             } 
-            if (race_stats[i][0] == REINDEER_FLYING) {
-                race_stats[i][2] += reindeers[i].flight_speed;
+            if (race_stats[i].state == REINDEER_FLYING) {
+                race_stats[i].distance += reindeers[i].flight_speed;
             }
-            race_stats[i][1]--;
+            race_stats[i].time_remaining--;
         }
         // Find farthest reindeer
-        unsigned int furthest_distance = race_stats[0][2];
+        unsigned int furthest_distance = race_stats[0].distance;
         for (size_t i=1 ; i<reindeer_count ; i++) {
-            if (race_stats[i][2] > furthest_distance) {
-                furthest_distance = race_stats[i][2];
+            if (race_stats[i].distance > furthest_distance) {
+                furthest_distance = race_stats[i].distance;
             }
         }
         // Add points
         for (size_t i=0 ; i<reindeer_count ; i++) {
-            if (race_stats[i][2] == furthest_distance) {
-                race_stats[i][3]++;
+            if (race_stats[i].distance == furthest_distance) {
+                race_stats[i].points++;
             }
         }
     }
     // Find winner
     for (size_t i=0 ; i<reindeer_count ; i++) {
-        if (race_stats[i][3] > most_points) {
-            most_points = race_stats[i][3];
+        if (race_stats[i].points > most_points) {
+            most_points = race_stats[i].points;
         }
     }
     return most_points;

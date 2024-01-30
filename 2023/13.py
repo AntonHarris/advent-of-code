@@ -30,14 +30,7 @@ def find_horizontal_mirror(pattern) -> tuple[bool, int]:
     return False, 0
 
 def find_vertical_mirror(pattern) -> tuple[bool, int]:
-    transformed_pattern = []
-    for i in range(len(pattern[1])):
-        transformed_pattern.append([])
-    for line in pattern:
-        for idx, char in enumerate(list(line)):
-            transformed_pattern[idx].append(char)
-    for i in range(len(transformed_pattern)):
-        transformed_pattern[i] = ''.join(transformed_pattern[i])
+    transformed_pattern = list(zip(*pattern))
     return find_horizontal_mirror(transformed_pattern)
 
 if __name__ == "__main__":

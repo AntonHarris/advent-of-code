@@ -2,6 +2,7 @@
 #include <string.h>
 #include <md5.h>
 #include <limits.h>
+#include <stdbool.h>
 
 int get_md5_hash_starts_with_x_zeroes(const char* input, int start, int num_zeroes);
 
@@ -17,24 +18,27 @@ int main() {
 }
 
 int get_md5_hash_starts_with_x_zeroes(const char* input, int start, int num_zeroes) {
+    bool all_zeroes = true;
     char buffer[32];
     unsigned char digest[16];
-    char digest_hex[33];
     struct MD5Context context;
-
+ 
     for (int i=start ; i<INT_MAX ; i++) {
+        all_zeroes = true;
         sprintf(buffer, "%s%d", input, i);
         MD5Init(&context);
         MD5Update(&context, (const uint8_t *)buffer, strlen(buffer));
         MD5Final(digest, &context);
-        for (int n=0 ; n<16 ; n++) {
-            sprintf(&digest_hex[n*2], "%02x", digest[n]);
+        digest[num_zeroes/2] &= '\xF0';
+        for (int j=0 ; j<(num_zeroes+1)/2 ; j++) {
+            if (digest[j] != '\0') {
+                all_zeroes = false;
+            }
         }
-        digest_hex[32] = '\0';
-        if (strncmp(digest_hex, "000000", num_zeroes) == 0) {
+        if (all_zeroes) {
             return i;
         }
     }
-
+ 
     return 0;
 }

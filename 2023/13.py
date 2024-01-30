@@ -2,7 +2,6 @@
 
 import sys
 
-# TODO: get this function working
 def find_horizontal_mirror(pattern) -> tuple[bool, int]:
     half_start = len(pattern)//2
     half_start = half_start - (1 if len(pattern)%2 != 0 else 0)
@@ -39,8 +38,6 @@ if __name__ == "__main__":
         exit(1)
 
     with open(sys.argv[1], 'r') as infile:
-        # data = infile.read()
-        # patterns = data.split("\n\n")
         patterns = infile.read().split("\n\n")
 
     summarise_pattern_notes = 0

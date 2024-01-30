@@ -4,7 +4,9 @@ import sys
 
 # TODO: get this function working
 def find_horizontal_mirror(pattern) -> tuple[bool, int]:
-    for idx in range(len(pattern)//2):
+    half_start = len(pattern)//2
+    half_start = half_start - (1 if len(pattern)%2 != 0 else 0)
+    for idx in range(half_start, -1, -1):
         idx_copy = idx
         idx_mirror = idx+1
         while idx>=0:
@@ -13,8 +15,9 @@ def find_horizontal_mirror(pattern) -> tuple[bool, int]:
             idx -= 1
             idx_mirror += 1
             if idx<0:
-                return True, idx_copy
-    for idx in range(len(pattern)-1,len(pattern)//2,-1):
+                return True, idx_copy+1
+    half_start = half_start + (2 if len(pattern)%2 != 0 else 1)
+    for idx in range(half_start, len(pattern)):
         idx_copy = idx
         idx_mirror = idx-1
         while idx<len(pattern):
@@ -22,20 +25,20 @@ def find_horizontal_mirror(pattern) -> tuple[bool, int]:
                 break
             idx += 1
             idx_mirror -= 1
-            if idx<0:
+            if idx==len(pattern):
                 return True, idx_copy
     return False, 0
 
 def find_vertical_mirror(pattern) -> tuple[bool, int]:
-    """
-    TODO: Create new matrix to call find_horizontal_mirror:
-    [                 [
-        [1, 2, 3],        [1, 4, 7],
-        [4, 5, 6], =>     [2, 5, 8],
-        [7, 8, 9]         [3, 6, 9]
-    ]                 ]
-    """
-    return False, 0
+    transformed_pattern = []
+    for i in range(len(pattern[1])):
+        transformed_pattern.append([])
+    for line in pattern:
+        for idx, char in enumerate(list(line)):
+            transformed_pattern[idx].append(char)
+    for i in range(len(transformed_pattern)):
+        transformed_pattern[i] = ''.join(transformed_pattern[i])
+    return find_horizontal_mirror(transformed_pattern)
 
 if __name__ == "__main__":
     if (len(sys.argv)<2):

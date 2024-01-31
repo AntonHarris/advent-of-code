@@ -3,16 +3,23 @@
 #include <md5.h>
 #include <limits.h>
 #include <stdbool.h>
+#include <libgen.h>
 
 int get_md5_hash_starts_with_x_zeroes(const char* input, int start, int num_zeroes);
 
-int main() {
-    const char* input = "yzbqklnj";
+int main(int argc, char **argv) {
+    char input_string[20] = {0};
+    if (argc<2) {
+        printf("Usage: %s input_string\nNo input string provided, using default string, yzbqklnj.\n\n", basename(argv[0]));
+        strcpy(input_string, "yzbqklnj");
+    } else {
+        strcpy(input_string, argv[1]);
+    }
 
-    int part_1_nbr = get_md5_hash_starts_with_x_zeroes(input, 0, 5);
-    printf("Hash for %s%d starts with 5 0s.\n", input, part_1_nbr);
-    int part_2_nbr = get_md5_hash_starts_with_x_zeroes(input, part_1_nbr+1, 6);
-    printf("Hash for %s%d starts with 6 0s.\n", input, part_2_nbr);
+    int part_1_nbr = get_md5_hash_starts_with_x_zeroes(input_string, 0, 5);
+    printf("Hash for %s%d starts with 5 0s.\n", input_string, part_1_nbr);
+    int part_2_nbr = get_md5_hash_starts_with_x_zeroes(input_string, part_1_nbr+1, 6);
+    printf("Hash for %s%d starts with 6 0s.\n", input_string, part_2_nbr);
 
     return 0;
 }

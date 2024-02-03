@@ -29,7 +29,8 @@ def find_horizontal_mirror(pattern, target=0) -> tuple[bool, int]:
     return False, 0
 
 def find_vertical_mirror(pattern, target=0) -> tuple[bool, int]:
-    transformed_pattern = list(zip(*pattern))
+#    transformed_pattern = list(zip(*pattern))
+    transformed_pattern = [''.join(row) for row in zip(*pattern)]
     return find_horizontal_mirror(transformed_pattern, target)
 
 if __name__ == "__main__":

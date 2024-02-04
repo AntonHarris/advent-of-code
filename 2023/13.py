@@ -41,24 +41,15 @@ if __name__ == "__main__":
     with open(sys.argv[1], 'r') as infile:
         patterns = infile.read().split("\n\n")
 
-    summarise_pattern_notes = 0
-    summarise_pattern_notes_smudged = 0
-    for pattern in patterns:
-        pattern_data = pattern.split("\n")
-        horizontal_reflection_found, horizontal_reflection_line = find_horizontal_mirror(pattern_data)
-        if horizontal_reflection_found == True:
-            summarise_pattern_notes += 100*horizontal_reflection_line
-        else:
-            vertical_reflection_found, vertical_reflection_line = find_vertical_mirror(pattern_data)
-            summarise_pattern_notes += vertical_reflection_line
-        
-        horizontal_reflection_found, horizontal_reflection_line = find_horizontal_mirror(pattern_data, 1)
-        if horizontal_reflection_found == True:
-            summarise_pattern_notes_smudged += 100*horizontal_reflection_line
-        else:
-            vertical_reflection_found, vertical_reflection_line = find_vertical_mirror(pattern_data, 1)
-            summarise_pattern_notes_smudged += vertical_reflection_line
-
-    print(f"Summary of pattern notes: {summarise_pattern_notes}")
-    print(f"Summary of pattern notes, smudged mirror: {summarise_pattern_notes_smudged}")
-
+    targets = [0, 1]
+    for target in targets:
+        summary_pattern_notes = 0
+        for pattern in patterns:
+            pattern_data = pattern.split("\n")
+            horiz_found, horiz_line = find_horizontal_mirror(pattern_data, target)
+            if horiz_found:
+                summary_pattern_notes += 100*horiz_line
+            else:
+                vertic_found, vertic_line = find_vertical_mirror(pattern_data, target)
+                summary_pattern_notes += vertic_line
+        print(f"Summary notes for target {target} = {summary_pattern_notes}")

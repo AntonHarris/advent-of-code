@@ -17,6 +17,12 @@ def try_possible_arrangements(line) -> int:
     row_springs, row_conditions = line.split(" ")
     count_unknown = row_springs.count('?')
     sum_damaged = sum([int(group) for group in row_conditions.split(",")])
+    """
+    TODO:
+    Create loop to replace the question marks in the row_springs with the appropriate
+    symbols, and then validate if the proposed new row in valid or not by using the
+    check_conditions function. Count and return the number of valid arrangements.
+    """
     return 1
 
 if __name__ == "__main__":

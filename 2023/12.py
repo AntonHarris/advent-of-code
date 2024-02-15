@@ -15,14 +15,13 @@ def check_conditions(row_springs, row_conditions) -> bool:
 
 def try_possible_arrangements(line) -> int:
     row_springs, row_conditions = line.split(" ")
-    row_springs_arr = list(row_springs)
     count_unknown = row_springs.count('?')
     count_known =  row_springs.count('#')
     sum_damaged = sum([int(group) for group in row_conditions.split(",")])
 
     """
-    TODO: improve this algo (which takes about 21 seconds on my computer), as it is not quick
-    enough to be able to complete part 2
+    TODO: improve this algo (which takes about 1 second using pypy3 on my computer), as it is
+    not quick enough to be able to complete part 2
     """
     count_possible_arrangements = 0
     for i in range(2**count_unknown):

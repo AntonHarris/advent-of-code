@@ -12,7 +12,7 @@ char* chomp(char *p);
 void execute_step(char grid[GRID_DIM][GRID_DIM]);
 unsigned int count_lights_on(char grid[GRID_DIM][GRID_DIM]);
 
-int main (int argc, char**argv) {
+int main (int argc, char **argv) {
     if (argc<2) {
         printf("Usage: %s [input_file_path/]input_file\n", basename(argv[0]));
         return 1;
@@ -114,9 +114,7 @@ void execute_step(char grid[GRID_DIM][GRID_DIM]) {
         if (grid[GRID_DIM-2][i] == '#') neighbours++;
         if ((grid[GRID_DIM-1][i] == '#' && (neighbours==2 || neighbours == 3)) || (grid[GRID_DIM-1][i] == '.' && neighbours==3))
             tmp_grid[GRID_DIM-1][i] = '#';
-    }
-    // first and last columns, sans corners
-    for (int i=1 ; i<(GRID_DIM-1) ; i++) {
+
         neighbours = 0;
         if (grid[i-1][0] == '#') neighbours++;
         if (grid[i+1][0] == '#') neighbours++;

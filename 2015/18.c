@@ -39,11 +39,7 @@ int main (int argc, char**argv) {
     // Part 1
     for (int i=0 ; i<NUM_STEPS ; i++) {
         execute_step(grid);
-    }
-    printf("There are %u lights on after %d steps.\n", count_lights_on(grid), NUM_STEPS);
-    
-    // Part 2
-    for (int i=0 ; i<NUM_STEPS ; i++) {
+
         grid2[0][0] = '#';
         grid2[0][GRID_DIM-1] = '#';
         grid2[GRID_DIM-1][0] = '#';
@@ -54,6 +50,7 @@ int main (int argc, char**argv) {
         grid2[GRID_DIM-1][0] = '#';
         grid2[GRID_DIM-1][GRID_DIM-1] = '#';
     }
+    printf("There are %u lights on after %d steps.\n", count_lights_on(grid), NUM_STEPS);
     printf("There are %u lights on after %d steps with corners stuck on.\n", count_lights_on(grid2), NUM_STEPS);
 
     return 0;

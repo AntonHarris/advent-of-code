@@ -17,15 +17,26 @@ typedef enum instruction_types {
     i_not,
 } INSTRUCTION_TYPES;
 
+/*
+TODO: Re-do, needs to take into account if AND or OR have a constant number value in the first
+      or second position, and not a reference to another wire. Also need to have INSTRUCTION be
+      just a description of the instruction, and create a second struct to list the instructions
+      to execute.
+*/
 typedef struct instruction {
     char wire1[LABEL_SIZE];
     char wire2[LABEL_SIZE];
     unsigned short val;
+    long int param;
     INSTRUCTION_TYPES instruc;
     char target_wire[LABEL_SIZE];
     struct instruction *next;
 } INSTRUCTION;
 
+/*
+TODO: Re-do, should reference just the wire and not a list of wires. Need to make a second
+      struct to be used to list the wires.
+*/
 typedef struct wire {
     char label[LABEL_SIZE];
     unsigned short val;
@@ -33,6 +44,7 @@ typedef struct wire {
 } WIRE;
 
 char* chomp(char *p);
+// TODO: Re-do all functions to make use of new structs
 void add_new_instruction (const char *s, INSTRUCTION **p_p_head);
 void add_new_wire(const char *s_label, unsigned short val, WIRE **p_p_head);
 size_t count_instructions (INSTRUCTION *p_head);
@@ -84,6 +96,7 @@ char* chomp(char *s) {
     return s;
 }
 
+// TODO : redo function
 void add_new_instruction (const char *s, INSTRUCTION **p_p_head) {
     INSTRUCTION *new_inst = (INSTRUCTION *) malloc (sizeof(INSTRUCTION));
     new_inst->next = *p_p_head;
@@ -100,10 +113,13 @@ void add_new_instruction (const char *s, INSTRUCTION **p_p_head) {
             new_inst->instruc = i_or;
         } else if (strncmp(buffer, "AND", strlen("AND")) == 0) {
             new_inst->instruc = i_and;
-        } else if (strncmp(buffer, "LSHIFT", strlen("LSHIFT")) == 0) {
-            new_inst->instruc = i_lshift;
-        } else { // only RSHIFT left
-            new_inst->instruc = i_rshift;
+        } else {
+            new_inst->param = strtol(new_inst->wire2, NULL, 10);
+            if (strncmp(buffer, "LSHIFT", strlen("LSHIFT")) == 0) {
+                new_inst->instruc = i_lshift;
+            } else { // only RSHIFT left
+                new_inst->instruc = i_rshift;
+            }
         }
     }
     *p_p_head = new_inst;

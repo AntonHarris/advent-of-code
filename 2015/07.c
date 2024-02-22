@@ -17,73 +17,45 @@ typedef enum instruction_types {
     i_not,
 } INSTRUCTION_TYPES;
 
-/*
-TODO: Re-do, needs to take into account if AND or OR have a constant number value in the first
-      or second position, and not a reference to another wire. Also need to have INSTRUCTION be
-      just a description of the instruction, and create a second struct to list the instructions
-      to execute.
-*/
-typedef struct instruction {
-    char wire1[LABEL_SIZE];
-    char wire2[LABEL_SIZE];
-    unsigned short val;
-    long int param;
-    INSTRUCTION_TYPES instruc;
-    char target_wire[LABEL_SIZE];
-    struct instruction *next;
-} INSTRUCTION;
-
-/*
-TODO: Re-do, should reference just the wire and not a list of wires. Need to make a second
-      struct to be used to list the wires.
-*/
-typedef struct wire {
+typedef struct wire_t {
     char label[LABEL_SIZE];
     unsigned short val;
-    struct wire *next;
-} WIRE;
+} WIRE_T;
+
+typedef struct wire_list_t {
+    WIRE_T wire;
+    struct wire_list_t *next;
+} WIRE_LIST_T;
 
 char* chomp(char *p);
-// TODO: Re-do all functions to make use of new structs
-void add_new_instruction (const char *s, INSTRUCTION **p_p_head);
-void add_new_wire(const char *s_label, unsigned short val, WIRE **p_p_head);
-size_t count_instructions (INSTRUCTION *p_head);
-size_t count_wires (WIRE *p_head);
-void wire_inits (INSTRUCTION **p_p_ihead, WIRE **p_p_whead);
-void apply_instructions (INSTRUCTION **p_p_ihead, WIRE **p_p_whead);
-WIRE * find_wire (const char *s, WIRE *p_head);
-unsigned short get_value_of_wire (const char *s, WIRE *p_head);
+void handle_instruction (FILE *in_file, WIRE_LIST_T **head);
+void add_wire_to_list (const char *s, unsigned short val, WIRE_LIST_T **head);
+WIRE_LIST_T* find_wire (const char *s, WIRE_LIST_T *head);
+unsigned short get_wire_val (const char *s, WIRE_LIST_T *head);
 
 int main (int argc, char **argv) {
     if (argc<2) {
-        printf("Usage: %s [input_file_path/]input_file\n", basename(argv[0]));
         return 1;
     }
 
     FILE *in_file = fopen(argv[1], "r");
-    char buffer[BUFFER_SIZE];
-    INSTRUCTION *instructions_head = NULL;
-    WIRE *wires_head = NULL;
+    WIRE_LIST_T *head = NULL;
     if (in_file == NULL) {
         fprintf(stderr, "Unable to open file %s.\n", argv[1]);
         perror("Error message opening file file");
         return 1;
     }
-    while (fgets(buffer, sizeof(buffer), in_file)) {
-        chomp(buffer);
-        add_new_instruction(buffer, &instructions_head);
+    while (!feof(in_file)) {
+        handle_instruction(in_file, &head);
     }
     fclose(in_file);
 
-    // printf("Size of instruction set: %lu.\n", count_instructions(instructions_head));
-    // printf("Size of wire set: %lu.\n", count_wires(wires_head));
-    wire_inits(&instructions_head, &wires_head);
-    // printf("Size of instruction set after wire_inits: %lu.\n", count_instructions(instructions_head));
-    // printf("Size of wire set after wire_inits: %lu.\n", count_wires(wires_head));
-    apply_instructions(&instructions_head, &wires_head);
-    // printf("Size of instruction set after apply_instructions: %lu.\n", count_instructions(instructions_head));
-    // printf("Size of wire set after apply_instructions: %lu.\n", count_wires(wires_head));
-    printf("Value of wire x = %d.\n", get_value_of_wire("x", wires_head));
+    WIRE_LIST_T *tmp_ptr_head = head;
+    while (tmp_ptr_head) {
+        tmp_ptr_head = tmp_ptr_head->next;
+    }
+
+    printf("Value of wire a = %u.\n", get_wire_val("a", head));
 
     return 0;
 }
@@ -96,97 +68,118 @@ char* chomp(char *s) {
     return s;
 }
 
-// TODO : redo function
-void add_new_instruction (const char *s, INSTRUCTION **p_p_head) {
-    INSTRUCTION *new_inst = (INSTRUCTION *) malloc (sizeof(INSTRUCTION));
-    new_inst->next = *p_p_head;
-    if (s[0] >= '0' && s[0] <= '9') {
-        sscanf(s, "%hu -> %s", &(new_inst->val), new_inst->target_wire);
-        new_inst->instruc = i_assign;
-    } else if (strncmp(s, "NOT", strlen("NOT")) == 0) {
-        new_inst->instruc = i_not;
-        sscanf(s, "NOT %s -> %s", new_inst->wire1, new_inst->target_wire);
-    } else {
-        char buffer[10] = {0};
-        sscanf(s, "%s %s %s -> %s", new_inst->wire1, buffer, new_inst->wire2, new_inst->target_wire);
-        if (strncmp(buffer, "OR", strlen("OR")) == 0) {
-            new_inst->instruc = i_or;
-        } else if (strncmp(buffer, "AND", strlen("AND")) == 0) {
-            new_inst->instruc = i_and;
+void handle_instruction (FILE *in_file, WIRE_LIST_T **head) {
+    char buffer[BUFFER_SIZE] = {0}, *ptr_buffer = &buffer[0];
+    if (fgets(buffer, sizeof(buffer), in_file)) {
+        chomp(buffer);
+        unsigned short val_1 = 0, val_2 = 0;
+        INSTRUCTION_TYPES inst_type;
+        if (isdigit(*ptr_buffer)) {
+            inst_type = i_assign;
+            sscanf(ptr_buffer, "%hu", &val_1);
         } else {
-            new_inst->param = strtol(new_inst->wire2, NULL, 10);
-            if (strncmp(buffer, "LSHIFT", strlen("LSHIFT")) == 0) {
-                new_inst->instruc = i_lshift;
-            } else { // only RSHIFT left
-                new_inst->instruc = i_rshift;
-            }
-        }
-    }
-    *p_p_head = new_inst;
-}
-
-void add_new_wire(const char *s_label, unsigned short val, WIRE **p_p_head) {
-    WIRE *p_wire = (WIRE *) malloc (sizeof(WIRE));
-    strcpy(p_wire->label, s_label);
-    p_wire->val = val;
-    p_wire->next = *p_p_head;
-    *p_p_head = p_wire;
-}
-
-size_t count_instructions (INSTRUCTION *p_head) {
-    size_t count = 0;
-    while (p_head) {
-        count++;
-        p_head = p_head->next;
-    }
-    return count;
-}
-
-size_t count_wires(WIRE *p_head) {
-    size_t count = 0;
-    while (p_head) {
-        count++;
-        p_head = p_head->next;
-    }
-    return count;
-}
-
-void wire_inits (INSTRUCTION **p_p_ihead, WIRE **p_p_whead) {
-    INSTRUCTION *p_instruct = *p_p_ihead, *p_prev_instruct = NULL;
-    while (p_instruct) {
-        if (p_instruct->instruc == i_assign) {
-            add_new_wire(p_instruct->target_wire, p_instruct->val, p_p_whead);
-
-            INSTRUCTION *p_tmp_instruct = p_instruct;
-            p_instruct = p_instruct->next;
-            if (p_prev_instruct) {
-                p_prev_instruct->next = p_tmp_instruct->next;
+            if (strncmp(buffer, "NOT", 3) == 0) {
+                inst_type = i_not;
             } else {
-                *p_p_ihead = p_instruct;
+                char tmp_label[LABEL_SIZE];
+                sscanf(buffer, "%s", tmp_label);
+                WIRE_LIST_T *tmp_wl = NULL;
+                while ((tmp_wl = find_wire(tmp_label, *head)) == NULL) {
+                    handle_instruction(in_file, head);
+                }
+                val_1 = get_wire_val(tmp_label, tmp_wl);
             }
-            free(p_tmp_instruct);
         }
-        else {
-            p_prev_instruct = p_instruct;
-            p_instruct = p_instruct->next;
+
+        if (inst_type != i_not) {
+            ptr_buffer = strchr(ptr_buffer, ' ');
+            ptr_buffer++;
+        }
+
+        switch(*ptr_buffer) {
+            case '-': // assignation
+                ptr_buffer = strchr(ptr_buffer, ' ');
+                ptr_buffer++;
+                add_wire_to_list(ptr_buffer, val_1, head);
+                printf("Assigned value of %d to label %s.\n", val_1, ptr_buffer);
+                return;
+            case 'A': // AND
+                inst_type = i_and;
+                break;
+            case 'O': // OR
+                inst_type = i_or;
+                break;
+            case 'L': // LSHIFT
+                inst_type = i_lshift;
+                break;
+            case 'R': // RSHIFT
+                inst_type = i_rshift;
+                break;
+            default: ; // NOT, do nothing
+        }
+
+        ptr_buffer = strchr(ptr_buffer, ' ');
+        ptr_buffer++;
+
+        if (isdigit(*ptr_buffer)) {
+            sscanf(ptr_buffer, "%hu", &val_2);
+        } else {
+            char tmp_label[LABEL_SIZE];
+            sscanf(ptr_buffer, "%s", tmp_label);
+            WIRE_LIST_T *tmp_wl = NULL;
+            while ((tmp_wl = find_wire(tmp_label, *head)) == NULL) {
+                handle_instruction(in_file, head);
+            }
+            val_2 = get_wire_val(tmp_label, tmp_wl);
+        }
+
+        ptr_buffer++;
+        ptr_buffer = strchr(ptr_buffer, ' ');
+        ptr_buffer++;
+        ptr_buffer = strchr(ptr_buffer, ' ');
+        ptr_buffer++;
+
+        switch(inst_type) {
+            case i_and:
+                add_wire_to_list(ptr_buffer, val_1 & val_2, head);
+                break;
+            case i_or:
+                add_wire_to_list(ptr_buffer, val_1 | val_2, head);
+                break;
+            case i_lshift:
+                add_wire_to_list(ptr_buffer, val_1 << val_2, head);
+                break;
+            case i_rshift:
+                add_wire_to_list(ptr_buffer, val_1 >> val_2, head);
+                break;
+            case i_not:
+                add_wire_to_list(ptr_buffer, val_2^0xFFFF, head);
+                break;
+            case i_assign: // do nothing, case already handled earlier
+                break;
         }
     }
 }
 
-void apply_instructions (INSTRUCTION **p_p_ihead, WIRE **p_p_whead) {
-    ;
+void add_wire_to_list (const char *s, unsigned short val, WIRE_LIST_T **head) {
+    WIRE_LIST_T *new_wl = (WIRE_LIST_T *) malloc (sizeof(WIRE_LIST_T));
+    strcpy(new_wl->wire.label, s);
+    new_wl->wire.val = val;
+    new_wl->next = *head;
+    *head = new_wl;
 }
 
-WIRE * find_wire (const char *s, WIRE *p_head) {
-    while (p_head) {
-        if (strcmp(s, p_head->label) == 0) {
-            return p_head;
+WIRE_LIST_T* find_wire (const char *s, WIRE_LIST_T *head) {
+    while (head) {
+        if (strcmp(head->wire.label, s) == 0) {
+            return head;
         }
+        head = head->next;
     }
     return NULL;
 }
 
-unsigned short get_value_of_wire (const char *s, WIRE *p_head) {
-    WIRE *tmp_wire = find_wire(s, p_head);
-    return tmp_wire ? tmp_wire->val : 0;
+unsigned short get_wire_val (const char *s, WIRE_LIST_T *head) {
+    WIRE_LIST_T *wire = find_wire(s, head);
+    return wire == NULL ? 0 : wire->wire.val;
 }

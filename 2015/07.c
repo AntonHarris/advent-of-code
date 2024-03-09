@@ -52,6 +52,7 @@ unsigned short get_value_of_target (const char *t, instruction_list_t *il);
 
 int main (int argc, char **argv) {
     if (argc<2) {
+        printf("Usage: %s [input_file_path/]input_file\n", basename(argv[0]));
         return 1;
     }
 
@@ -71,11 +72,10 @@ int main (int argc, char **argv) {
 
     char *target = "a";
     unsigned short target_value = get_value_of_target(target, instructions);
-    
     printf("Part 1: Value of wire %s = %u.\n", target, target_value);
 
-    sprintf(buffer, "%u", target_value);
     clear_values(instructions);
+    sprintf(buffer, "%u", target_value);
     override_instruction(instructions, "b", i_assign, "", buffer);
     target_value = get_value_of_target(target, instructions);
     printf("Part 2: Value of wire %s after override of wire b = %u.\n", target, target_value);

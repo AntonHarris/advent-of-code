@@ -31,16 +31,6 @@ typedef struct instruction_list_t {
     struct instruction_list_t *next;
 } instruction_list_t;
 
-typedef struct {
-    char label[LABEL_SIZE];
-    unsigned short val;
-} wire_t;
-
-typedef struct wire_list_t {
-    wire_t wire;
-    struct wire_list_t *next;
-} wire_list_t;
-
 char* chomp (char *p);
 size_t count_spaces (const char *s);
 instruction_list_t* add_new_instruction (instruction_list_t *l, const char *s);

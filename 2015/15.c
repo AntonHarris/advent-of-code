@@ -20,7 +20,8 @@ typedef struct {
 } ingredient_t;
 
 char* chomp (char *p);
-long calc_max_score (ingredient_t *ingredients, size_t count_ingredients);
+long calc_max_score_test (ingredient_t *ingredients, bool include_calories);
+long calc_max_score_data (ingredient_t *ingredients, bool include_calories);
 
 int main (int argc, char **argv) {
     if (argc<2) {
@@ -52,7 +53,10 @@ int main (int argc, char **argv) {
     }
     fclose(in_file);
 
-    printf("Max score (without counting calories): %ld.\n", calc_max_score(&ingredients[0], count_ingredients));
+    // printf("Max score (without taking calories into account): %ld.\n", calc_max_score_test(&ingredients[0], false));
+    // printf("Max score (with only 500 calories cookies): %ld.\n", calc_max_score_test(&ingredients[0], true));
+    printf("Max score (without taking calories into account): %ld.\n", calc_max_score_data(&ingredients[0], false));
+    printf("Max score (with only 500 calories cookies): %ld.\n", calc_max_score_data(&ingredients[0], true));
 
     return 0;
 }
@@ -65,8 +69,54 @@ char* chomp(char *s) {
     return s;
 }
 
-long calc_max_score (ingredient_t *ingredients, size_t count_ingredients) {
+long calc_max_score_test (ingredient_t *ingredients, bool include_calories) {
     long max_score = 0;
+
+    for (int i=0 ; i<MAX_TEASPOONS ; i++) {
+        int j = MAX_TEASPOONS-i;
+        long curr_capacity = ingredients[0].capacity*i + ingredients[1].capacity*j;
+        curr_capacity = curr_capacity<0 ? 0 : curr_capacity;
+        long curr_durability = ingredients[0].durability*i + ingredients[1].durability*j;
+        curr_durability = curr_durability<0 ? 0 : curr_durability;
+        long curr_flavour = ingredients[0].flavour*i + ingredients[1].flavour*j;
+        curr_flavour = curr_flavour<0 ? 0 : curr_flavour;
+        long curr_texture = ingredients[0].texture*i + ingredients[1].texture*j;
+        curr_texture = curr_texture<0 ? 0 : curr_texture;
+        long curr_calories = include_calories==false ? 1 : ingredients[0].calories*i + ingredients[1].calories*j;
+        curr_calories = curr_calories<0 ? 0 : curr_calories;
+        long curr_score = curr_capacity*curr_durability*curr_flavour*curr_texture;
+        if (curr_score > max_score && (include_calories ==  false || curr_calories == 500)) {
+            max_score = curr_score;
+        }
+    }
+
+    return max_score;
+}
+
+long calc_max_score_data (ingredient_t *ingredients, bool include_calories) {
+    long max_score = 0;
+
+    for (int i=0 ; i<MAX_TEASPOONS ; i++) {
+        for (int j=0 ; j<MAX_TEASPOONS-i ; j++) {
+            for (int k=0 ; k<MAX_TEASPOONS-i-j ; k++) {
+                int l = MAX_TEASPOONS-i-j-k;
+                long curr_capacity = ingredients[0].capacity*i + ingredients[1].capacity*j + ingredients[2].capacity*k + ingredients[3].capacity*l;
+                curr_capacity = curr_capacity<0 ? 0 : curr_capacity;
+                long curr_durability = ingredients[0].durability*i + ingredients[1].durability*j + ingredients[2].durability*k + ingredients[3].durability*l;
+                curr_durability = curr_durability<0 ? 0 : curr_durability;
+                long curr_flavour = ingredients[0].flavour*i + ingredients[1].flavour*j + ingredients[2].flavour*k + ingredients[3].flavour*l;
+                curr_flavour = curr_flavour<0 ? 0 : curr_flavour;
+                long curr_texture = ingredients[0].texture*i + ingredients[1].texture*j + ingredients[2].texture*k + ingredients[3].texture*l;
+                curr_texture = curr_texture<0 ? 0 : curr_texture;
+                long curr_calories = include_calories==false ? 1 : ingredients[0].calories*i + ingredients[1].calories*j + ingredients[2].calories*k + ingredients[3].calories*l;
+                curr_calories = curr_calories<0 ? 0 : curr_calories;
+                long curr_score = curr_capacity*curr_durability*curr_flavour*curr_texture;
+                if (curr_score > max_score && (include_calories ==  false || curr_calories == 500)) {
+                    max_score = curr_score;
+                }
+            }
+        }
+    }
 
     return max_score;
 }
